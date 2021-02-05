@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ModifyReviewActivity">
+
+    <RatingBar
+        android:id="@+id/modify_ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:max="5"
+        android:numStars="5"
+        android:progressBackgroundTint="@android:color/darker_gray"
+        android:progressTint="@android:color/holo_orange_light"
+        android:rating="3"
+        android:secondaryProgressTint="@android:color/darker_gray"
+        android:stepSize="1" />
+
+    <ImageView
+        android:id="@+id/review_ImageView_modify"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onAlbum_clicked"
+        android:visibility="gone"
+        app:srcCompat="@drawable/food"
+        />
+
+    <TextView
+        android:id="@+id/modify_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:background="@drawable/rounded"
+        android:gravity="center"
+        android:onClick="select_menu_modify"
+        android:padding="10dp"
+        android:text="메뉴 이름"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/bContentEditText_modify"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:background="@drawable/rounded"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="글내용"
+        android:inputType="textMultiLine"
+        android:padding="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/delete_image_button_modify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="30dp"
+            android:onClick="delete_image_clicked"
+            android:text="사진삭제"
+            android:visibility="gone"
+            android:background="@drawable/rounded"/>
+
+        <Button
+            android:id="@+id/add_image_button_modify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginRight="30dp"
+            android:onClick="onAlbum_clicked"
+            android:text="사진추가"
+            android:visibility="visible"
+            android:background="@drawable/rounded"/>
+
+        <Button
+            android:id="@+id/button7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:background="@drawable/textbackground"
+            android:onClick="modifyReview"
+            android:text="수정"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+</LinearLayout>

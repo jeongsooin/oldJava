@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:padding="16dp"
+            tools:ignore="HardcodedText">
+
+            <com.transferwise.sequencelayout.SequenceLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:progressBackgroundColor="@color/colorDisable"
+                app:progressForegroundColor="@color/colorPrimary">
+
+                <com.transferwise.sequencelayout.SequenceStep
+                    android:id="@+id/sequence_step1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    app:anchor="날짜"
+                    app:title="----년 --월 --일"
+                    app:active="false">
+
+                    <Button
+                        android:id="@+id/buttonPickDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/border3"
+                        android:text="예약 날짜"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold" />
+                </com.transferwise.sequencelayout.SequenceStep>
+
+                <com.transferwise.sequencelayout.SequenceStep
+                    android:id="@+id/sequence_step2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    app:anchor="시간"
+                    app:title="00시 00분"
+                    app:active="false">
+
+                    <Button
+                        android:id="@+id/buttonPickTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/border3"
+                        android:text="예약 시간"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold" />
+                </com.transferwise.sequencelayout.SequenceStep>
+
+                <com.transferwise.sequencelayout.SequenceStep
+                    android:id="@+id/sequence_step3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    app:anchor="인원"
+                    app:title="0명"
+                    app:active="false">
+
+                    <Button
+                        android:id="@+id/buttonSetPersonNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/border3"
+                        android:text="예약 인원"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold" />
+                </com.transferwise.sequencelayout.SequenceStep>
+
+                <com.transferwise.sequencelayout.SequenceStep
+                    android:id="@+id/sequence_step4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    app:anchor="좌석"
+                    app:title="테이블 0"
+                    app:active="false">
+
+                    <Button
+                        android:id="@+id/buttonPickTable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/border3"
+                        android:text="좌석 선택"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold" />
+                </com.transferwise.sequencelayout.SequenceStep>
+
+                <com.transferwise.sequencelayout.SequenceStep
+                    android:id="@+id/sequence_step5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    app:anchor="메뉴"
+                    app:title="0원"
+                    app:active="false">
+
+                    <Button
+                        android:id="@+id/buttonPrickMenu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/border3"
+                        android:text="메뉴 선택"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+
+                </com.transferwise.sequencelayout.SequenceStep>
+
+                <com.transferwise.sequencelayout.SequenceStep
+                    android:id="@+id/sequence_step6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="10dp"
+                    app:anchor="확인"
+                    app:title="예약 완료"
+                    app:active="false">
+
+                    <Button
+                        android:id="@+id/buttonRsvConfirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/border3"
+                        android:text="예약 확인"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold" />
+                </com.transferwise.sequencelayout.SequenceStep>
+            </com.transferwise.sequencelayout.SequenceLayout>
+        </LinearLayout>
+    </ScrollView>
+</layout>

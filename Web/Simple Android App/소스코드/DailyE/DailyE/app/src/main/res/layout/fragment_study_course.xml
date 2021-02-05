@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StudyCourseFragment"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/word_level1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="초급 영단어 500"
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:backgroundTint="#2F5E83" />
+
+        <Button
+            android:id="@+id/word_level2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="중급 영단어 500"
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:backgroundTint="#2F5E83" />
+
+        <Button
+            android:id="@+id/word_level3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="고급 영단어 500"
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:backgroundTint="#2F5E83" />
+
+        <Button
+            android:id="@+id/word_level4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="혼동 영단어 300"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:backgroundTint="#2F5E83" />
+    </LinearLayout>
+</FrameLayout>

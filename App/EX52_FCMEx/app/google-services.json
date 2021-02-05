@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "701087572606",
+    "firebase_url": "https://mytest-e952a.firebaseio.com",
+    "project_id": "mytest-e952a",
+    "storage_bucket": "mytest-e952a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701087572606:android:3100187d1e5501fc",
+        "android_client_info": {
+          "package_name": "com.study.android.fcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "701087572606-1ti8rkafblu2ciulfsfq61hhlct33kh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyHwQhAIMpT66HN2S-fjVFnJMNl6LzEsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "701087572606-1ti8rkafblu2ciulfsfq61hhlct33kh5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

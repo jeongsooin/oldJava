@@ -1,0 +1,231 @@
+<Programming Diary>
+
+** 2019-06-03-Mon **
+1. 작업 분류 : 
+ - (Android APP) android에서 JSP를 이용해 서버와 통신하여 Oracle Database 다루기
+2. 작업 내용 : 
+ - 회원 가입 기능, 로그인 기능에서 필요한 데이터베이스와 안드로이드 간의 통신 기능 구현
+ - 간단한 레이아웃 정리 작업
+3. 작업 일지 : 
+ - 기본적인 회원가입, 로그인, 인증 기능을 구현하고 테스트를 마친 상태에서 작업을 시작하였다.
+마지막으로 작업한 것은 회원 정보 업데이트를 테스트 환경(보안 설정 등 없음)에서 실행해 보고 데이터가 변경되는
+것을 확인한 것이었다. 여기에 정보를 업데이트 하기 전에 약간의 보안 기능 추가를 하기 위해 업데이트 하기 전,
+기존 계정의 비밀번호를 체크 하는 기능을 작성하였다. 그리고 이것에 겸해서 비슷한 기능인 비밀번호 바꾸기 기능도
+추가하여 구현하였다. 일단 비밀번호 구현하기 위한 코드를 작성하고 통신할 JSP 파일과 쿼리문을 만들고 로컬 서버에서 테스트를 해보았다. 여기서 에러가 발생했는데, *들어가는 데이터의 크기가 컬럼에 저장할 수 있는 데이터의 크기보다 커서 UPDATE 쿼리를 실행하지 못하는 에러였다. (java.sql.SQLException: ORA-12899: value too large for column "SCOTT"."MEMBER"."PASSWORD" (actual: 118, maximum: 20)) 단순하게 해결책을 찾자면 테이블 컬럼의 크기를 크게 늘려주면 될일 이지만, 그렇다면 사용자의 비밀번호 입력을 제한하여 받아야 하며, 다른 테이블도 변경 시에 동일한 문제가 발생할 것이고 일일히 같은 작업을 반복해주어야 할 것이다. 어떤 크기의 데이터가 들어올지 모르는 상황에서 이것은 미봉책에 불과하다. 물론 단순한 String 데이터만 받으므로 컬럼 값을 충분히 큰 크기로 설정해 놓으면 문제가 없겠지만, 나는 좀 더 근본적인 해결책을 찾고 싶었다. 첫번째로 시도해 본 방법은 데이터 베이스의 CHARACTER SET을 변경하는 것이었다. 
+ - sqlplus "/as sysdba"
+ - SHUTDOWN IMMEDIATE;
+ - STARTUP MOUNT;
+ - ALTER SYSTEM ENABLE RESTRICTED SESSION;
+ - ALTER SYSTEM SET JOB_QUEUE_PROCESSES=0;
+ - ALTER SYSTEM SET AQ_TM_PROCESSES=0;
+ - ALTER DATABASE OPEN;
+ - ALTER DATABASE CHARACTER SET KO16MSWIN949;
+ - ALTER DATABASE CHARACTER SET INTERNAL_USE KO16KSC5601; 
+ - SHUTDOWN IMMEDIATE;
+ - STARTUP;
+CMD 창에서 Sqlplus로 접속한 뒤 위와 같은 명령어를 통해 데이터베이스의 CHARACTER SET을 바꾸었다. 
+다시 테스트를 해보는데 이번엔 JSP 파일과의 통신에서 500에러가 발생하였다. MemberDAO의 updatePassword() 메소드에 접근하지 못하고, NullPointer Exception이 발생한다. 코드를 분석해보니 안드로이드 쪽에서 파라미터를 보낼 때 TextView에서 String을 받아서 보내지 않고 바로 TextView의 변수명을 사용하고 있었다. *변수명을 지을 때는 변수인지 뷰인지 명확하게 구분해서 짓도록 해야겠다.
+이번에는 새로운 에러가 발생한다. *java.lang.RuntimeException 500에러의 원인이다. 에러의 메세지는 null 이다.
+loginCheck 메소드에서 모든 경우에서 리턴이 되지 않아 발생하는 문제였다. 고치고 테스트 하니 또 다른 에러이다
+*ORA-12528, TNS:listener: all appropriate instances are blocking new connections 에러가 발생한다. 아까 CHARACTER SET 셋팅을 하면서 DBMS가 재가동 되지 않은 것으로 추정하고 다시 켜보기로 했다.
+SQL> startup
+ORA-01081: cannot start already-running ORACLE - shut it down first
+실행 결과 이미 정상적으로 동작중이다. 종료 후 재시작 해보기로 했다.  
+SQL> shutdown immediate
+ORA-01507: database not mounted
+
+
+ORACLE instance shut down.
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area 1068937216 bytes
+Fixed Size                  2260048 bytes
+Variable Size             721421232 bytes
+Database Buffers          339738624 bytes
+Redo Buffers                5517312 bytes
+Database mounted.
+Database opened.
+실행 결과 중간에 ORA-01507: database not mounted 에러가 발생하긴 했는데 일단 다시 시도해보기로 한다.
+비밀번호은 데이터 크기 문제 없이 잘 실행되는데 한글 문자로 입력한 데이터들이 깨져있다.
+데이터를 수정해서 입력해서 그래도 깨지는지 확인해봐야한다. 정보 수정시에 EditText를 AlertDialog로 띄워서 입력 받으려 했는데 activity와 fragment, 거기에 다시 layoutinflater까지 엮여 있어서 생기는 문제인건지 MainaActivity 레이아웃 생성 문제가 생긴다 일단은 dialog를 주석처리하고 기본 환경에서 테스트 해보기로한다. 새로 생성하는 데이터는 문제 없이 테이블에 저장되었다. 기존 CHARATERSET을 변경하면서 생긴 문제인 것 같다. 이제는 ALERT 창 문제를 해결해야 한다. CUSTOM DIALOG를 사용하려 하는데 현재 include된 FrameLayout에서 Activity를 실행하고 거기서 또다시 FrameLayout을 생성해 AlertDialog에 View를 주입하는 상태인데, 이 과정을 간소화 하거나 Custom Dialog에 대해 더 알아봐야겠다. 아니 잘보니 CustomDialog쪽이 아닌 일반 Dialog쪽이 문제였다. 메소드의 간소화 문제도 있고하니,
+이 쪽도 동일하게 Custom Dialog로 수정해야겠다. EditText가 하나 뿐이라 그냥 Builder 세팅을 통해 만드려고 했으나 이 부분은 후에 좀 더 공부한 뒤에 적용하는 것으로 한다. 
+CustomDialog로 변경후 실행했으나 Dialog가 뜨자마자 바로 dismiss되는 현상이 발생했다. 에러 원인은 Dialog를 dismiss하지 않은 상태에서 Activity를 종료하려고 한 것이 원인이라고 한다. if 문 중에 dismiss를 넣지 않은 부분이 하나 있었는데 그 부분이 문제인 것 같아서 return 대신 dismiss로 변경해 보기로했다. 그래도 문제가 발생한다.
+dialog에서 전역변수에 접근하는 것이 문제인 것일까? 원인을 모르겠다. JSP와의 통신 결과는 성공이고 데이터도 변경이 되는데 다이얼로그 부분만 에러가 나면서 강제 종료된다. 드디어 다이얼로그 종료 문제를 해결했다.
+역시 finish()와 dismiss() 간의 중첩이 문제 되면서 Activity의 라이프사이클이 꼬여서 생긴 문제였다. finish()되는 코드를 따로 분리할 필요가 없길래 dialog의 코드 안에 같이 넣음으로써 해결되었다. 
+로그인과 로그아웃의 상태를 설정하고 상태에 따라 로그인 사용자만 사용할 수 있는 메뉴의 Visibility를 세팅하게 코딩했다. 세션이나 쿠키 등에 관련된 로직을 작성해야 할 지 아직은 모르지만, 일단 메뉴 활성화와 관련된 문제는 이것으로 간단하게 해결하기로 했다. 아직 회원가입과 로그인 관련해서 처리해야 할 문제가 많지만 이 기능 구현은 일단은 여기까지하고 다음 기능 구현으로 넘어가야 할 것이다. 남은 기능을 대략 정리해 보면 다음과 같다. 다음에 기술되는 기능 이외에도 이후 추가될 수도 있다.
+ - 회원가입/ 로그인 / 인증 기능의 예외 및 에러처리
+ - SNS 최초 로그인 시 회원가입으로 연결
+ - 회원 탈퇴 기능
+ - 관리자로 로그인시 회원 정보 조회 기능
+ - SNS 로그인의 로그아웃 기능 / revoke 기능 - DB 데이터도 삭제 
+
+이제 다음 기능 구현을 작업하기에 앞서, 데이터베이스 테이블과 테스트 데이터를 입력하여 테스팅 환경을 만들어 놓는 작업이 필요하다. 오늘은 다음 기능 구현에 착수하기엔 시간이 많이 남지 않아서, 간단하게 레이아웃 작업을 하면서 마무리하는 편이 나을 것 같다. 
+
+** 2019-06-04-Tue **
+1. 작업 분류 :
+ - (협업) Android 개별 작업물 병합
+ - (개인) Android 예약 기능 구현하기 
+2. 작업 내용 :
+ - 프로젝트 간 Gradle, SDK Version, FireBase APP ID, Client ID, Google Client ID 등  앱 환경 맞추기
+ - 레이아웃 병합하고 기능 연결하고 데이터 교환 설정, 메뉴 별 기능 통합, 액티비티 및 프래그먼트 별 연결
+ - 추가 기능 작업하기 
+3. 작업 일지 :
+ - 오늘은 일단 서로 작업한 프로젝트를 합치는 것부터 하고 작업을 시작하려고 한다. 이제부터는 데이터를 공유해야 기능 구현이 될 것이므로, 지금 시점에서 두 프로젝트의 병합이 필요하다고 판단했다. 일단 일반 스프링으로 작업했던 내 중계 웹 프로젝트를 스프링 부트로 통합했다. 통합은 컨트롤러에서 RequestMapping만 해주고, 안드로이드에서 각자 쓰던 데이터베이스 중계 자바 클래스는 그대로 두었다. 사용하는 서버 포트가 겹쳐서 합치는게 불가피 했는데 제대로 실행이 되는지 시험해보아야겠다. 그리고 스프링 부트로 합쳤으니 패스워드 암호화도 되는지 테스트 해볼 것이다. 
+Security를 적용하고 모든 페이지에 권한을 허용한 뒤에 passwordEncoder만 사용하기로 했다. 기존 JSP 파일에 passwordEncoder를 적용하여 비빌번호를 암호화 하고 복호화 하는 로직으로 변경했다. 오라클 커넥션을 조금 변경하는 등의 문제가 생겼었지만 코드는 잘 들어가는데 또 다시 데이터 크기 문제가 발생했다. 오라클 커넥션을 변경해서 그런걸까? 캐릭터 셋을 KO16MSWIN949 대신 KO16KSC5601로 바꾸었다. 대부분 KO16KSC5601로 바꾸는 것을 해결책으로 제시하고 있기에 다시 변경하였다. 그래도 크기 문제가 발생한다. 비밀번호 길이를 길게 해서 다시 가입시도해 보았는데 인코더가 크기 60으로 고정 인코딩 하는 것 같아서 칼럼 값 크기를 변경하기로 했다. 칼럼 값을 변경하는 것으로 해결되었다. 비밀번호를 아무리 길게해도 패스워드 암호화 과정에서 크기가 60으로 고정되는 것 같다. 그렇다면 사용자가 어떤 길이의 비밀번호를 입력해도 크기가 60 이상 커질 일 없으므로 칼럼 데이터의 크기를 키우는 것으로 해결해도 괜찮을 것이다. 인코딩 해서 가입까지는 성공했는데 디코딩이 안된다. 디코딩 결과가 다르게 나와서 로그인을 할 수 없다. 패스워드 인코더 사용 방식이 틀린 것 같다. 로그인 할 때는 새로 인코딩을 하는게 아니라 matches 함수를 사용해야 하는 것 같다. 역시 복호화 할 때는 다른 메소드를 쓰는 것이 맞았다.
+* .matches(rawPassword, encodedPassword) 같은 형태로 데이터베이스 내의 패스워드와 비교해야 올바르게 비교가 가능하다. 로그인 기능, 정보 수정에서 비밀번호 확인 기능까지 테스트가 완료되었다. 비밀번호 변경과, 변경된 비밀번호로 로그인 테스트까지 성공적으로 마쳤다. 이제 비밀번호의 raw data가 그대로 데이터베이스에 노출되지 않는다. 일단 Android Application과 Android - Server간 중개 Web Project의 기초 병합 과정은 맞추었다. 기존에 내가 쓰던 Spring 버전의 웹 프로젝트도 Springboot 버전으로 업그레이드 하여 Springboot 프로젝트에 합쳐서 데이터베이스와 앱간의 데이터 전달이 잘 되는지까지 테스팅도 마쳤다. 아직 병합이 완전히 된 것은 아니고, 하나의 프로젝트로 만들 환경만 구축한 것이라고 볼 수 있지만, 기초틀은 완성되어서 다음 작업할 리스트를 작성해서 병합 작업을 하면서 개인 작업도 병행하면 될 것이다.
+
+** 2019-06-05-Wed **
+1. 작업 분류 : 
+ - 개발 문서 관리 및 정비하기
+ - Android 예약 기능 구현하기
+2. 작업 내용 : 
+ - 데이터베이스 정의서, 개발 일정 문서 변경 내용 확인 및 정비
+ - Oracle Database, Firebase Storage와 통신 가능한 웹 서버 / 안드로이드 환경 구축하기
+ - 예약 기능과 관련된 로직 설계하기
+3. 작업 일지 : 
+ - 작업을 시작하기 전에, 개발 문서들을 정리했다. 그리고 기존에 작업하던 기능이 완벽하게 마무리 된 것은 아니지만, 오늘은 일단 새로운 기능 구현을 시작해야한다. 디테일한 마무리는 오늘 작업하는 기능까지 완료되면 같이 하기로 하고 핵심 기능 구현에 착수하기로했다. 일단 이 기능은 두 가지 데이터베이스와의 통신이 필요하다. 하나는 Oracle Database이고 하나는 Firebase Storage이다. 이 두 가지 데이터를 어떻게 다룰 것인지에 대한 전략 구상이 필요할 것이다. 그리고 메인 기능을 담당하고 있으므로 MainActivity의 레이아웃을 설계해야한다. 오늘 거의 하루종일 레이아웃 설계만 했다. 로직 구현을 시작해야 하는데 메인 프래그먼트 작업을 대강 끝내니 벌써 3시간 밖에 남지 않았다. 
+
+** 2019-06-06-Thu **
+1. 작업 분류 : 
+ - Web 서버 Android 서버에 맞춰서 PasswordEncoder 적용하기
+2. 작업 내용 : 
+ - 회원가입 시, 로그인 시 Security 적용하여 비밀번호 암호화, 복호화 구현하기
+3. 작업 일지 : 
+ - 오늘은 내 작업 부분인 Android가 아닌 웹 서버 쪽을 잠시 맡아서 작업했다. 내가 Android 서버에서 Security를 적용하여 회원가입과 로그인시에 비밀번호 인코딩, 디코딩을 적용했기 때문에 웹 쪽에서도 그걸 맞춰야 하기 때문이다. 중계만 하는 Android 서버와 달리
+웹은 보여지는 Page가 있기 때문에 로직이 완전히 같지는 않았지만 동일하게 데이터베이스에 비밀번호가 저장되고 체크할 수 있도록 환경을 맞게 구현했다.
+
+** 2019-06-07-Fri **
+1. 작업 분류 : 
+ - 안드로이드 예약 기능 구현하기
+2. 작업 내용 : 
+ - 안드로이드에서 예약 하기, 예약 취소, 실시간 대기 등 예약 관련 기능 구현
+ - 데이터베이스 수정으로 인한 로직 수정, 데이터베이스 간 연동 로직 설계
+ - 예약 기능 레이아웃 설계
+ - 기존 기능에 적용할 수 있도록 업데이트
+3. 작업 일지 : 
+ - 우선은 팀원들과 예약 관련 데이터베이스 테이블을 설계하는 회의를 했다. 회의한 결과, 예약 환경을 관리자가 설정할 수 있도록 하는 테이블이 하나 추가되었고, 그에 따라 회원 테이블에도 예약 관련 데이터 칼럼이 추가되었다. 따라서 기존 로직도 변경이 불가피하게 되었다. 데이터베이스가 변경되었으니 기존 로직을 변경된 사항에 맞게 수정하는 작업을 먼저 시작하기로했다. 기존 로직을 수정한 후, 예약 기능 레이아웃을 설계했다. 우선 예약 정보를 받는 버튼들을 프래그먼트에 표시하고, MANAGERSV 테이블의 데이터를 가져와서 예약 정보 선택 시 적용할 수 있도록 로직을 구성하기로 했다. 그리고 예약 정보를 담는 ReservationDTO를 만들어서 예약 완료 후 데이터 베이스에 저장 할 수 있도록 자바 클래스 파일을 만들었다.
+* Error:com.android.builder.merge.DuplicateRelativeFileException: More than one file was found with OS independent path 'META-INF/LICENSE' 
+* Suggestion: add 'tools:replace="android:appComponentFactory"' to <application> element at AndroidManifest.xml
+* C:\jeongsooin\Local_TeamProject\TeamProject_Android\SignIn_SignUp_Sample\app\build\intermediates\transforms\mergeJavaRes\debug\0.jar: 다른 프로세스가 파일을 사용 중이기 때문에 프로세스가 액세스 할 수 없습니다.
+ ==> gradle 버전을 3.2.1에서 3.4.1로 버전 업 후 Sync ... 그러자 다음과 같은 에러 발생
+* minimum supported gradle version is 5.5.1 current version is 3.4.1 
+ ==> gradle 5.1.1 버전을 다운로드하여 gradle을 버전 업
+* ERROR: This version of Android Studio cannot open this project, please retry with Android Studio 3.4 or newer.
+ ==> 하지만 현재 버전에서는 사용할 수 없음. 다른 에러 해결 방법 필요
+ ==> ButterKnife 적용 후에 위의 일련의 에러들이 발생하기 시작했는데 이게 문제인가?
+     implementation 'com.jakewharton:butterknife:10.1.0'
+     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+ ==> 다시 3.2.1로 버전을 낮추고 Build 해서 Build는 성공했다. 뭐가 문제인지 잘 모르겠음.
+빌드를 성공하고 Run 했더니 이번에는 또 다른 에러가 발생....
+* Unable to delete file: C:\jeongsooin\Local_TeamProject\TeamProject_Android\SignIn_SignUp_Sample\app\build\intermediates\transforms\mergeJavaRes\debug\0.jar
+ ==> 이대로 괜찮은건가 싶다. 안정성에 문제가 생기는것은 아닌지?
+stackoverflowd에서 Try File -> Invalidate Caches and Restart을 해보라 해서 시도했다. Build까지는 잘 되지만 역시 Run App에서 에러가 발생한다.
+* More than one file was found with OS independent path 'META-INF/androidx.versionedparcelable_versionedparcelable.version'
+ ==> 다시 처음의 에러로 돌아왔다....
+packagingOptions 을 exclude 'META-INF/LICENSE' 에서 exclude 'META-INF/proguard/androidx-annotations.pro'로 바꿔보았다.
+그래도 에러가 여전하다. packaginOptions를 다음과 같이 수정했다.
+	exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+Build는 문제 없다. META-INF 경로를 가진 파일이 두 개 이상 있다는 것 같은데... instant Run과 관련한 문제인것 같기도 하고.
+Run App 에러는 여전하다. 다들 packagingOptions { exclude 'META-INF/proguard/androidx-annotations.pro'} 을 gradle에 추가하는 것으로 해결이 된다는데 나는 안된다. 
+testImplementation 'junit:junit:4.12'
+androidTestImplementation 'com.android.support.test:runner:1.0.2'
+androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+이 세 줄을 지웠더니 된다고 하는 사람이 있어서 시도해보기로 했다.마찬가지로 안된다. packagingOptions {exclude'**/language/bm/*'} 이렇게 다시 packagingOptions를 바꿨다. 와일드 카드를 이용해서 같은 디렉토리에 있는 파일들을 전부 exclude 하는 것 같다. 여전히 에러 발생.
+packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/androidx.appcompat_appcompat.version'
+        exclude 'META-INF/androidx.drawerlayout_drawerlayout.version'
+        exclude  'META-INF/androidx.swiperefreshlayout_swiperefreshlayout.version'
+        exclude 'META-INF/androidx.loader_loader.version'
+        exclude 'META-INF/androidx.viewpager_viewpager.version'
+        exclude  'META-INF/androidx.core_core.version'
+        exclude 'META-INF/androidx.slidingpanelayout_slidingpanelayout.version'
+        exclude 'META-INF/androidx.localbroadcastmanager_localbroadcastmanager.version'
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+        exclude 'META-INF/androidx.legacy_legacy-support-core-utils.version'
+        exclude 'META-INF/androidx.vectordrawable_vectordrawable.version'
+        exclude 'META-INF/androidx.versionedparcelable_versionedparcelable.version'
+        exclude 'META-INF/androidx.asynclayoutinflater_asynclayoutinflater.version'
+        exclude 'META-INF/androidx.cursoradapter_cursoradapter.version'
+        exclude 'META-INF/androidx.print_print.version'
+        exclude 'META-INF/androidx.vectordrawable_vectordrawable-animated.version' }
+이렇게까지 해봤으나 계속 에러가 발생한다. 
+* Error: Static interface methods are only supported starting with Android N (--min-api 24): void butterknife.Unbinder.lambda$static$0() 버터 나이프와 관련된 에러 같아서 버터나이프를 일단 제외하기로 했다. 애초에 xml에 있는 calenderView를 바인딩 시키려고 했던건데...
+기존 방식으로는 Null Pointer Exception이 떠서 @BindView 어노테이션을 사용하려고 했었다. 에러가 자꾸 발생하니까 일단은 지우고 기존 방식에서 해결책을 찾아봐야겠다. 
+* E/AndroidRuntime: FATAL EXCEPTION: main
+    Process: com.study.android.signin_signup_sample, PID: 23498
+    java.lang.NullPointerException: Attempt to invoke virtual method 'com.prolificinteractive.materialcalendarview.MaterialCalendarView$State com.prolificinteractive.materialcalendarview.MaterialCalendarView.state()' on a null object reference
+Run은 되지만 위와 같은 에러 발생. 아까와 똑같다. 제자리 걸음이다 ... 뷰의 바인딩에 대해서 찾아봐야겠다. 
+ ==> https://academy.realm.io/kr/posts/aw211-android-data-binding-mvp-passive-view-interface/
+ ==> https://gun0912.tistory.com/71
+고전적인 findViewById()를 사용하는 것이 아닌 DataBinding을 이용한 뷰 바인딩에 대한 포스트이다. 라이브러리 사용이 아니라 안드로이드 스튜디오 버전 1.5 이상에서 제공되는 기능이라고 한다. 이것으로 바인딩을 해봐야겠다. 일단 build.gradle에 다음과 같이 추가한다. 
+android {
+    …
+    dataBinding.enabled = true
+}
+
+싱크 후 빌드는 이상이 없이 잘 되었다. 
+데이터바인딩을 사용한 방식으로 MaterialDialog의 뷰를 바인딩 했다. 우선 레이아웃의 xml을 <layout xmlns:android="http://schemas.android.com/apk/res/android"></layout>으로 감싸주고 Rebuild하면 해당 레이아웃에 대한 Databinding 클래스가 생성된다. (컴파일 단계에서 생성됨.) 
+DialogMaterialCalenderBinding binding;
+binding = DataBindingUtil.setContentView(this, R.layout.dialog_material_calender);
+        materialCalendarView = binding.calendarView;
+과 같이 코드를 작성하여 뷰를 바인딩 시킨 후 Run App 한 결과 여기까지는 이상이 없다. 그동안 바인딩이 안돼서 Null로 뜨던 calanderView가
+잡히는지 앱을 실행해서 확인해 본다. 음 이번에는 버튼을 못 찾는다. dataBinding을 적용해서 다른 레이아웃도 모두 적용해야 하는걸까? 일단
+RegisterActivity의 xml만 수정후 Rebuild 하고 같은 방식으로 바인딩해 본다. 실행은 잘되는데 setContentView를 잘못해서 레이아웃이 잘못 적용되었다. 아직 익숙치 않은 방식이라 그런가 데이터바인딩 방식을 공부해가며 코드를 다시 작성했다. 바인딩은 잘 되었다. 그런데 calanderView에 커스텀 셋팅이 적용되지 않았다. dateChangedListener도 반응이 없다. 뭐가 문제일까?
+* java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
+엉뚱한 뷰를 다이얼로그에 셋팅해서 문제였다. 그래서 코드를 수정했는데 위와 같은 문제가 생긴다. 에러 메시지가 지시하는대로
+if (materialCalendarView.getParent() != null) { ((ViewGroup)materialCalendarView.getParent()).removeView(materialCalendarView); }
+위와 같은 코드를 작성한 후 다시 테스트 해본다. 제대로 커스텀 캘린더 셋팅도 동작하고 리스너도 동작한다. 드디어 커스텀 캘린더 뷰 로직을 거의 해결했다. 캘린더 시작과 끝 날짜를 한달로 제한했기 때문에 disable 코드는 굳이 필요없을 것 같다. 아니, 지금과는 다른 로직으로 필요하다. 예약이 불가능해진 날짜를 disable 하는 방식으로 수정해야 한다. 그 다음은 예약 시간을 선택하는 다이얼로그를 띄우는 로직을 작성했다. 이 다이얼로그에서는 하나의 아이템만 선택해야 하므로 setSingleChoiceItems 메소드를 사용했다. 음 아이템으로 넣은 문자열 배열이 제대로 들어가지 않아서 선택할 아이템이 하나도 뜨지 않았다. 뭔가 로직에 잘못된 점이 있는 것 같다. 아, 아직 데이터베이스 연동 부분을 작성 안해서 availableTimes[]를 만드는 createTimeOptions 함수가 코드 흐름 상에 호출되지 않았다. 그 부분을 수정했다. createTimeOptions 함수에서 * Attempt to invoke virtual method 'int java.lang.Integer.intValue()' on a null object reference 에러가 발생했다. HashMap<String, Integer> 타입으로 timesMap을 만들었는데, 여기서 타입 캐스팅이나 Integer 클래스 호출 문제가 생긴 것 같다. 
+       Integer start = timesMap.get(openTime);
+       Integer end = timesMap.get(closeTime);
+
+        int _start = start.intValue();
+        int _end = end.intValue();
+
+그래서 위와 같이 코드를 수정했다. 좀 더 간단명료하게 만들 수 있을 것 같은데, 그 부분은 나중에 고민해 보기로 하고 로직을 완성시키는데 집중해야한다. 캘린더와 시간 고르는 로직을 완성했다. 
+시간 고르는 로직은 여러가지 변수로 테스팅해서 안정성을 확인해야한다. 아직 인덱싱 부분에서 에러가 발생한다. 문자열 배열 간의 인덱스를 좀 더 자세히 분석해 봐야겠다. 일단은 선택한 시간의 인덱스를 로그로 찍어서 확인하고 차근차근 해결해 나가기로했다.
+
+** 2019-06-08-Sat **
+1. 작업 분류 : 
+ - 안드로이드 예약 기능 구현하기
+2. 작업 내용 : 
+ - 안드로이드에서 예약 하기, 예약 취소, 실시간 대기 등 예약 관련 기능 구현
+ - 데이터베이스 수정으로 인한 로직 수정, 데이터베이스 간 연동 로직 설계
+ - 예약 기능 레이아웃 설계
+ - 기존 기능에 적용할 수 있도록 업데이트
+3. 작업 일지 : 
+ - 시간 고르는 로직에서 에러 나는 것을 잡기 위해 자바 프로젝트를 만들고 거기서 인덱싱이 제대로 되는지 테스팅 했다. String 배열을 만들 때 시작 인덱스와 끝 인덱스 설정을 잘못한 것이 문제였다.
+그리고 Integer와 intValue() 코드는 없애고 처음의 단순한 int 변수로 바꾸었다. 필요없는 클래스 박싱, 언박싱이었다. 
+int start = timesMap.get(openTime);
+int end = timesMap.get(closeTime);
+int length = end - start + 1;
+availableTimes = new String[length];
+for (int i = 0; i < length; i++) {
+    availableTimes[i] = rsvTimes[i + start]; } 코드를 다음과 같이 수정하니 문제 없이 잘 돌아가고, 코드도 훨씬 간단해졌다. 그 다음은 dialog에서 singleSelection 시 NullPointer 에러가 나는 것을 해결했다.
+내가 단일 아이템 선택 메소드를 잘 이해하지 못하고 있던 것이었다. bulider에서쓸 List 두 개를 만들었다. 하나는 선택 가능한 시간이 들어있는 리스트이고, 하나는 선택한 시간이 들어갈 리스트이다.
+만들었던 availableTimes 배열을 item 리스트에 저장하고, 선택한 시간을 selectedItems 리스트에 add 하게 만들었다. 그리고 시간은 이 리스트에서 가져와서 reservationDTO에 세팅해주었다. 
+그 다음에 해결한 것은, 날짜 선택할 시 최초 dialog는 잘 뜨는데 두 번째 선택하면  오류가 나서 앱이 꺼지는 에러이다. 어제 생겼던 * java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
+에러가 그대로 발생하는 것인데, removeView를 처음 onCreate 할 때 한번만 부르기 때문에 생기는 오류였다. dialog를 부를 때 removeView를 하도록 위치를 옮겼더니 문제없이 잘 돌아간다.
+이제 그동안 만들었던 dialog와 관련된 자잘한 오류들을 다 해결했다. 다음 단계로 넘어가야 하는데, 이제는 데이터베이스와 통신해서 예약 옵션을 불러올 JSP 파일을 만드는 것이 선행되어야 작업할 수 있다.
+그래서 데이터베이스와 통신할 JSP 서버 작업을 먼저 하기로했다. 
+ 
+** 2019-06-08-Sun **
+1. 작업 분류 : 
+ - 안드로이드 예약 기능 구현하기
+2. 작업 내용 : 
+ - 안드로이드에서 예약 하기, 예약 취소, 실시간 대기 등 예약 관련 기능 구현
+ - 데이터베이스 수정으로 인한 로직 수정, 데이터베이스 간 연동 로직 설계
+ - 예약 기능 레이아웃 설계
+ - 기존 기능에 적용할 수 있도록 업데이트
+3. 작업 일지 : 
+ - 우선 데이터베이스와 DTO, DAO 작업을 선행했다. Reservation 테이블 뿐만이 아니라 관련된 테이블이 더 있어서 샘플 데이터를 넣고, 쿼리문들을 실행해서 확인하는 작업을 해야했다.
+* Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/commons/logging/LogFactory Springboot 에러
+

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_drawer1"
+    tools:showIn="navigation_view">
+
+    <group
+        android:id="@+id/menu_user"
+        android:checkableBehavior="single"
+        android:visible="false">
+        <item
+            android:id="@+id/nav_myPage"
+            android:icon="@drawable/ic_my_page_icon"
+            android:title="내 정보" />
+        <item
+            android:id="@+id/nav_notice_user"
+            android:icon="@mipmap/notice_icon_bulb"
+            android:title="공지사항" />
+        <item
+            android:id="@+id/nav_inquiry_user"
+            android:icon="@mipmap/help_icon"
+            android:title="문의사항" />
+        <item
+            android:id="@+id/nav_review_user"
+            android:icon="@mipmap/review_icon"
+            android:title="리뷰" />
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@mipmap/ic_profile_img"
+            android:title="설정" />
+        <item
+            android:id="@+id/nav_chat_user"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Chat" />
+    </group>
+
+    <group
+        android:id="@+id/menu_admin"
+        android:checkableBehavior="single"
+        android:visible="false">
+        <item android:title="관리자 메뉴">
+            <menu>
+                <item
+                    android:id="@+id/nav_myPage_admin"
+                    android:icon="@drawable/ic_my_page_icon"
+                    android:title="내 정보" />
+                <item
+                    android:id="@+id/nav_kitchen"
+                    android:icon="@drawable/kitchen"
+                    android:title="주방모드" />
+                <item
+                    android:id="@+id/nav_notice"
+                    android:icon="@mipmap/notice_icon_bulb"
+                    android:title="공지사항" />
+                <item
+                    android:id="@+id/nav_inquiry"
+                    android:icon="@mipmap/help_icon"
+                    android:title="문의사항" />
+                <item
+                    android:id="@+id/nav_review"
+                    android:icon="@mipmap/review_icon"
+                    android:title="리뷰" />
+                <item
+                    android:id="@+id/nav_sendfcm"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="FCM" />
+                <item
+                    android:id="@+id/nav_chat"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="Chat" />
+            </menu>
+        </item>
+    </group>
+</menu>

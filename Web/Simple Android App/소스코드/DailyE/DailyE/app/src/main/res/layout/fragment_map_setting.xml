@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapSettingFragment"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="내 공부장소 설정"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="5dp"
+            android:text="내가 지정한 장소 주변에서 공부모드가 자동ON 되고, 장소를 벗어나면 OFF 됩니다."
+            android:textSize="14sp" />
+
+        <Switch
+            android:id="@+id/switch_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:text="내 공부장소 사용하기"
+            android:textSize="18sp" />
+
+        <fragment
+            android:id="@+id/map"
+            class="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:gravity="center|start"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/address_string"
+                android:layout_width="315dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="0"
+                android:background="@color/browser_actions_bg_grey"
+                android:ems="10"
+                android:hint="주소로 검색"
+                android:inputType="textPersonName"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/search_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="주소로 검색"
+                android:src="@drawable/ic_search" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

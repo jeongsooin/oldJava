@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.study.springboot.dao.IMVC_BoardDao">
+	<select id="listDao" resultType="com.study.springboot.android.dto.MVC_BoardDto">
+		select * from mvc_board where bMenu = #{param1} and bIndent=0 order by bGroup desc, bStep asc
+	</select>
+
+	<select id="reviewListDao" resultType="com.study.springboot.android.dto.MVC_BoardDto">
+		select * from mvc_board
+		where bMenu ='리뷰'
+		order by bGroup desc, (case bstep when 0 then 1 end), bStep desc
+	</select>
+	
+	<select id="reviewSearchNum" resultType="Integer">
+		select bGroup from mvc_board
+ 		where bmenu='리뷰' and menu_name = #{param1}
+ 		 order by bId desc
+	</select>
+
+	<select id="replyNum" resultType="Integer">
+		select count(*)-1 from mvc_board where bMenu = #{param1} 
+		group by bGroup order by bGroup desc
+	</select>	
+	
+	<select id="contentDao" resultType="com.study.springboot.android.dto.MVC_BoardDto">
+		select * from MVC_Board
+		 where bGroup = #{param1}
+		 order by bGroup desc, (case bstep when 0 then 1 end), bStep desc
+	</select>
+	
+	<insert id="writeDao" parameterType="java.util.Map">
+		insert into mvc_board (bId, bName , bTitle, bContent , bGroup,
+								bStep, bIndent, Id, bMenu,
+								star, bImageName, Img_extension, Menu_name, secret)
+				 values (mvc_board_seq.nextval, #{bName}, #{bTitle}, #{bContent}, mvc_board_seq.currval,
+					 		#{bStep}, #{bIndent}, #{ID}, #{bMenu},
+                		 	#{star}, #{bImageName}, #{img_extension}, #{menu_name}, #{secret})
+	</insert>
+	
+	<update id="upHit">
+		update mvc_board set bHit = bHit+1 where bId = #{param1}
+	</update>
+	
+	<delete id="deleteDao">
+		delete mvc_board where bId = #{param1}
+	</delete>
+	
+	<update id="modifyDao" parameterType="java.util.HashMap">
+		update mvc_board set 
+		bTitle = #{bTitle}, bContent = #{bContent}, bImageName = #{bImageName}, Img_extension=#{img_extension},
+		menu_name = #{menu_name}, star = #{star}, secret = #{secret}		 
+		where bId = #{bId}
+	</update>
+	
+	<insert id="replyDao" parameterType="java.util.HashMap">
+		insert into mvc_board 
+		 (bId, bName, ID, bTitle, bContent, bGroup, bStep, bIndent, bMenu)
+		 values (mvc_board_seq.nextval, #{bName}, #{ID}, #{bTitle}, #{bContent}, #{bGroup}, #{bStep}, #{bIndent}, #{bMenu})
+	</insert>
+	
+	<update id="modifyReply" parameterType="java.util.HashMap">
+		update mvc_board set 
+		bTitle = #{bTitle}, bContent = #{bContent}		 
+		where bId = #{bId}
+	</update>
+	
+	<update id="replyShape">
+		update mvc_board set bStep = bStep + 1
+		 where bGroup = #{param1} and bStep > #{param2}
+	</update>
+	
+	<select id="getMenu" resultType="String">
+		select menu_name from menu
+	</select>
+</mapper>

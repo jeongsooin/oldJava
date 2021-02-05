@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Ex02_LifeCycle</string>
+    <string name="button1">새로운 액티비티</string>
+    <string name="button2">액티비티 종료</string>
+</resources>

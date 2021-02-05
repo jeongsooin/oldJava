@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/study_course"
+            android:icon="@drawable/ic_test"
+            android:title="학습코스" />
+        <item
+            android:id="@+id/study_word"
+            android:icon="@drawable/ic_book"
+            android:title="단어공부" />
+        <item
+            android:id="@+id/study_sentence"
+            android:icon="@drawable/ic_speech"
+            android:title="회화공부" />
+        <item
+            android:id="@+id/favorite_word"
+            android:icon="@drawable/ic_favorite"
+            android:title="즐겨찾기" />
+        <item
+            android:id="@+id/study_today"
+            android:icon="@drawable/ic_today"
+            android:title="학습기록" />
+    </group>
+
+    <item android:title="Settings and About">
+        <menu>
+            <item
+                android:id="@+id/app_settings"
+                android:icon="@drawable/ic_setting"
+                android:title="설정" />
+            <item
+                android:id="@+id/about_info"
+                android:icon="@drawable/ic_info"
+                android:title="오픈 소스 라이센스" />
+        </menu>
+    </item>
+
+</menu>

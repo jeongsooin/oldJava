@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AppSettingFragment"
+    android:background="#FFFFFF"
+    android:id="@+id/fragment_app_setting">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/settings_study_alarm"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="내 공부시간 설정"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/style_color_primary"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/settings_study_location"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="내 공부장소 설정"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/style_color_primary"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/settings_study_alarm"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/settings_app_alarm_on"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="자동 로그인 설정"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/style_color_primary"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.512"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/settings_study_location"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/settings_report"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="208dp"
+            android:text="문의하기"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/style_color_primary"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/settings_app_alarm_on"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>
